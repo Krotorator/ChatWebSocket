@@ -51,20 +51,34 @@ ws.onmessage = function(message) {
     } else if (messageBody.messageBody && messageBody.messageBody.type == "message") {
         let img;
         let users = document.querySelectorAll("#userImg");
-
         for (const user of users) {
             if (user.parentElement.parentElement.dataset.nick == messageBody.client.datanick) {
                 img = user.src;
             }
         }
-
         let userMessage = {
             img: img,
             nick: messageBody.client.nick,
             message: messageBody.messageBody.data.message
         };
+
         let newMessage = document.createElement("div");
         newMessage.setAttribute("id", "new-message");
+
+        let messageExist = document.querySelector("#messages").lastElementChild;
+        if (messageExist != null) {
+            if (
+                messageExist.firstElementChild.dataset.nick != userMessage.nick &&
+                messageExist.className != "right"
+            ) {
+                newMessage.classList.toggle("right");
+            } else if (messageExist.firstElementChild.dataset.nick == userMessage.nick) {
+                if (messageExist.className) {
+                    newMessage.classList.add(messageExist.className);
+                }
+            }
+        }
+
         chatMessages.append(newMessage);
 
         const source = document.getElementById("message-template").innerHTML;
@@ -86,7 +100,6 @@ ws.onmessage = function(message) {
         let currentUsers = document.querySelectorAll(
             `[data-nick="${messageBody.client.datanick}"]`
         );
-
         for (const user of currentUsers) {
             user.querySelector("img").setAttribute("src", messageBody.messageBody.data);
         }

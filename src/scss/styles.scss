@@ -238,6 +238,22 @@ body {
     }
 }
 
+#new-message {
+    display: flex;
+}
+
+.right {
+    text-align: right;
+    .messages__item {
+        margin-left: auto;
+    }
+    .user__img-wrap {
+        order: 2;
+    }
+    .messages__group {
+        order: 1;
+    }
+}
 .chatForm {
     width: 100%;
     display: flex;

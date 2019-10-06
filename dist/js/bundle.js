@@ -8186,6 +8186,18 @@ ws.onmessage = function (message) {
     };
     var newMessage = document.createElement("div");
     newMessage.setAttribute("id", "new-message");
+    var messageExist = document.querySelector("#messages").lastElementChild;
+
+    if (messageExist != null) {
+      if (messageExist.firstElementChild.dataset.nick != userMessage.nick && messageExist.className != "right") {
+        newMessage.classList.toggle("right");
+      } else if (messageExist.firstElementChild.dataset.nick == userMessage.nick) {
+        if (messageExist.className) {
+          newMessage.classList.add(messageExist.className);
+        }
+      }
+    }
+
     chatMessages.append(newMessage);
     var _source = document.getElementById("message-template").innerHTML;
 
