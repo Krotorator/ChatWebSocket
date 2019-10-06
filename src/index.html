@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Document</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="" />
+        <link rel="stylesheet" href="css/styles.min.css" />
+        <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
+        <link rel="shotcut icon" href="favicon.ico" />
+        <meta name="description" content="" />
+    </head>
+    <body>
+        <div class="auth" id="auth" style="display: block">
+            <a href="#" class="auth__close">
+                <svg class="auth__close-icon" width="17" height="17" viewBox="0 0 17 17">
+                    <g>
+                        <g>
+                            <path d="M17.414 2L16 .586 1.37 15.215l1.415 1.414z" />
+                        </g>
+                        <g>
+                            <path d="M.586 2L2 .586l14.63 14.629-1.415 1.414z" />
+                        </g>
+                    </g>
+                </svg>
+            </a>
+            <div class="icon">
+                <div class="icon__wrap">
+                    <img src="img/auth-icon.png" alt="chat icon" class="icon__img" />
+                </div>
+            </div>
+            <div class="auth__description">
+                <h1 class="auth__title">Authorization</h1>
+                <p class="auth__text">
+                    Please enter your name and nickname for further authorization
+                </p>
+            </div>
+            <form method="POST" name="auth" class="authForm">
+                <input type="text" name="name" id="" placeholder="Enter your name" />
+                <input type="text" name="nick" id="" placeholder="Enter your nick" />
+                <button class="btn authForm__btn" id="login" type="submit">Sign In</button>
+            </form>
+        </div>
+        <section class="chat-section">
+            <div class="users" id="users"></div>
+            <div class="chat">
+                <div class="chat__header">
+                    <h2 class="chat__title">Chat</h2>
+                    <span class="chat__usersNum"><span></span>users</span>
+                </div>
+                <div class="chat__body">
+                    <div class="messages" id="messages"></div>
+                </div>
+                <div class="chat__footer">
+                    <form method="post" class="chatForm">
+                        <input
+                            class="chat__input"
+                            type="text"
+                            name="message"
+                            id="message"
+                            placeholder="Enter message..."
+                        />
+                        <button class="btn chatForm__btn" type="button" id="messageSend">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="avatarPopup" style="display: none">
+                <a href="#" class="auth__close avatarPopup__close" id="avatarPopupClose">
+                    <svg class="auth__close-icon" width="17" height="17" viewBox="0 0 17 17">
+                        <g>
+                            <g>
+                                <path d="M17.414 2L16 .586 1.37 15.215l1.415 1.414z" />
+                            </g>
+                            <g>
+                                <path d="M.586 2L2 .586l14.63 14.629-1.415 1.414z" />
+                            </g>
+                        </g>
+                    </svg>
+                </a>
+                <h2 class="avatarPopup__title">Load image</h2>
+                <div class="avatarPopup__content">
+                    <a href="#" class="avatarPopup__icon-link">
+                        <img src="img/photo-camera.png" alt="avatar icon" class="avatarPopup__icon"
+                    /></a>
+
+                    <div class="avatarPopup__user">
+                        <span class="avatarPopup__userName">Name</span>
+                        <span class="avatarPopup__userStatus"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="loadPopup" style="display: none">
+                <!-- <input type="file" id="fileElem" multiple="false" accept="image/*" /> -->
+                <div class="loadPopup__dropArea">
+                    <img class="loadPopup__dropImg" id="dropImg" src="" alt="" />
+                </div>
+                <h3 class="loadPopup__title">Drag and drop your photo here!</h3>
+                <div class="loadPopup__btns">
+                    <button class="btn loadPopup__btn" id="loadPopupCancel">Cancel</button>
+                    <button class="btn loadPopup__btn" id="loadPopupLoad">Load</button>
+                </div>
+            </div>
+        </section>
+        <script src="js/bundle.js"></script>
+        <script id="user-template" type="text/x-handlebars-template">
+            {{#each list}}
+            <div class="user" data-nick={{nick}}>
+                <div class="user__img-wrap">
+                    <img src={{img}} alt="" id="userImg" class="user__img">
+                </div>
+              <div class="user__name-wrap">
+                  <span class="user__name">{{name}}</span>
+                  <span class="user__nick">{{nick}}</span>
+              </div>
+            </div>
+            {{/each}}
+        </script>
+        <script id="message-template" type="text/x-handlebars-template">
+
+
+            <div class="messages__item" data-nick={{nick}}>
+                <div class="user__img-wrap">
+                    <img src={{img}} alt="" class="user__img">
+                </div>
+                <div class="messages__group">
+                    <div class="user__nick">{{nick}}</div>
+                    <span class="user__message">{{message}}</span>
+                </div>
+            </div>
+        </script>
+    </body>
+</html>

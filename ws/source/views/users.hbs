@@ -1,0 +1,13 @@
+<div class="users">
+    {{#each users}}
+    <div class="user">
+        {{#if img}}
+        <img src="{{img}}" alt="ava" class="user__img">
+        {{else}}
+        <img src="http://makag.ru/uploads/images/blogs/000/000/002/2015/12/20/avatar-blog-2_500x500crop.jpg" alt="ava"
+            class="user__img">
+        {{/if}}
+        <div class="user__name">{{email}}</div>
+    </div>
+    {{/each}}
+</div>
