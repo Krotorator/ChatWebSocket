@@ -36,7 +36,7 @@
                     Please enter your name and nickname for further authorization
                 </p>
             </div>
-            <form method="POST" name="auth" class="authForm">
+            <form method="POST" name="auth" class="authForm" autocomplete="off">
                 <input type="text" name="name" id="" placeholder="Enter your name" />
                 <input type="text" name="nick" id="" placeholder="Enter your nick" />
                 <button class="btn authForm__btn" id="login" type="submit">Sign In</button>
@@ -53,15 +53,16 @@
                     <div class="messages" id="messages"></div>
                 </div>
                 <div class="chat__footer">
-                    <form method="post" class="chatForm">
+                    <form method="POST" class="chatForm">
                         <input
                             class="chat__input"
                             type="text"
                             name="message"
                             id="message"
                             placeholder="Enter message..."
+                            autocomplete="off"
                         />
-                        <button class="btn chatForm__btn" type="button" id="messageSend">
+                        <button class="btn chatForm__btn" type="submit" id="messageSend">
                             Send
                         </button>
                     </form>
@@ -129,6 +130,7 @@
                     <div class="user__nick">{{nick}}</div>
                     <span class="user__message">{{message}}</span>
                 </div>
+                <div class="time">{{time}}</div>
             </div>
         </script>
     </body>

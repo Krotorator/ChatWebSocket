@@ -8103,253 +8103,340 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-var Handlebars = require("handlebars");
+window.onload = function () {
+  var Handlebars = require("handlebars");
 
-var ws = new WebSocket("ws://localhost:9000");
-var authWindow = document.querySelector("#auth");
-var authForm = document.forms.auth;
-var name = authForm.name;
-var nick = authForm.nick;
-var authSend = document.querySelector("#login");
-var authClose = document.querySelector(".auth__close");
-var chatUsers = document.querySelector("#users");
-var chatMessages = document.querySelector("#messages");
-var chatMessage = document.querySelector("#message");
-var messageSend = document.querySelector("#messageSend");
-var numberOfUsers = document.querySelector(".chat__usersNum span");
-var avatarPopup = document.querySelector(".avatarPopup");
-var avatarPopupName = document.querySelector(".avatarPopup__userName");
-var avatarPopupLoadImg = document.querySelector(".avatarPopup__icon-link");
-var avatarPopupClose = document.querySelector("#avatarPopupClose");
-var loadPopup = document.querySelector(".loadPopup");
-var imgDropArea = document.querySelector(".loadPopup__dropArea");
-var dropImg = document.querySelector("#dropImg");
+  var ws = new WebSocket("ws://localhost:9020");
+  var authWindow = document.querySelector("#auth");
+  var authForm = document.forms.auth;
+  var name = authForm.name;
+  var nick = authForm.nick;
+  var authSend = document.querySelector("#login");
+  var authClose = document.querySelector(".auth__close");
+  var chatUsers = document.querySelector("#users");
+  var chatMessages = document.querySelector("#messages");
+  var chatMessage = document.querySelector("#message");
+  var messageSend = document.querySelector("#messageSend");
+  var numberOfUsers = document.querySelector(".chat__usersNum span");
+  var avatarPopup = document.querySelector(".avatarPopup");
+  var avatarPopupName = document.querySelector(".avatarPopup__userName");
+  var avatarPopupLoadImg = document.querySelector(".avatarPopup__icon-link");
+  var avatarPopupClose = document.querySelector("#avatarPopupClose");
+  var loadPopup = document.querySelector(".loadPopup");
+  var imgDropArea = document.querySelector(".loadPopup__dropArea");
+  var dropImg = document.querySelector("#dropImg"); // window.onload = function() {
+  //     const chatBody = document.querySelector(".chat__body");
+  //     chatUsers.classList.add("hidden");
+  //     chatBody.classList.add("hidden");
+  // };
 
-ws.onopen = function (e) {
-  console.log("connection ok");
-};
-
-var user = {
-  list: []
-};
-numberOfUsers.innerText = 0;
-
-ws.onmessage = function (message) {
-  var messageBody = JSON.parse(message.data);
-  var messageType = "";
-
-  if (messageBody.type == "newUser") {
-    user.list.push({
-      img: "http://s1.iconbird.com/ico/2013/3/637/w128h12813939683291.png",
-      name: messageBody.data.name,
-      nick: messageBody.data.nick
-    });
-    var source = document.getElementById("user-template").innerHTML;
-    var template = Handlebars.compile(source);
-    var context = user;
-    var html = template(context);
-    chatUsers.innerHTML = html;
-  } else if (messageBody.messageBody && messageBody.messageBody.type == "message") {
-    var img;
-    var users = document.querySelectorAll("#userImg");
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = users[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var _user = _step.value;
-
-        if (_user.parentElement.parentElement.dataset.nick == messageBody.client.datanick) {
-          img = _user.src;
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-
-    var userMessage = {
-      img: img,
-      nick: messageBody.client.nick,
-      message: messageBody.messageBody.data.message
+  ws.onopen = function (e) {
+    console.log("connection ok");
+    var user = {
+      list: []
     };
-    var newMessage = document.createElement("div");
-    newMessage.setAttribute("id", "new-message");
-    var messageExist = document.querySelector("#messages").lastElementChild;
+    var nicks = [];
+    numberOfUsers.innerText = 0;
 
-    if (messageExist != null) {
-      if (messageExist.firstElementChild.dataset.nick != userMessage.nick && messageExist.className != "right") {
-        newMessage.classList.toggle("right");
-      } else if (messageExist.firstElementChild.dataset.nick == userMessage.nick) {
-        if (messageExist.className) {
-          newMessage.classList.add(messageExist.className);
+    ws.onmessage = function (message) {
+      var messageBody = JSON.parse(message.data);
+      var messageType = "";
+
+      if (messageBody.type == "forValidation") {
+        messageBody.users.forEach(function (user) {
+          nicks.push(user.nick);
+        });
+      } else if (messageBody.type == "newUser") {
+        user.list.push({
+          img: "http://s1.iconbird.com/ico/2013/3/637/w128h12813939683291.png",
+          name: messageBody.data.name,
+          nick: messageBody.data.nick
+        });
+        var source = document.getElementById("user-template").innerHTML;
+        var template = Handlebars.compile(source);
+        var context = user;
+        var html = template(context);
+        chatUsers.innerHTML = html;
+      } else if (messageBody.messageBody && messageBody.messageBody.type == "message") {
+        var date = new Date();
+        var hours = timePlusZero(date.getHours());
+        var minutes = timePlusZero(date.getMinutes());
+        var time = "".concat(hours, ":").concat(minutes);
+        console.log(time);
+        var img;
+        var users = document.querySelectorAll("#userImg");
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = users[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var _user = _step.value;
+
+            if (_user.parentElement.parentElement.dataset.nick == messageBody.client.datanick) {
+              img = _user.src;
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
         }
-      }
-    }
 
-    chatMessages.append(newMessage);
-    var _source = document.getElementById("message-template").innerHTML;
+        var userMessage = {
+          img: img,
+          nick: messageBody.client.nick,
+          message: messageBody.messageBody.data.message,
+          time: time
+        };
+        var newMessage = document.createElement("div");
+        newMessage.setAttribute("id", "new-message");
+        var messageExist = document.querySelector("#messages").lastElementChild;
 
-    var _template = Handlebars.compile(_source);
-
-    var _context = userMessage;
-
-    var _html = _template(_context);
-
-    newMessage.innerHTML = _html;
-  } else if (messageBody.type == "allUsers") {
-    var usersForCounter = document.querySelector("#users");
-    numberOfUsers.innerText = parseInt(messageBody.allUsers.list.length);
-    console.log(numberOfUsers.innerText);
-    var _source2 = document.getElementById("user-template").innerHTML;
-
-    var _template2 = Handlebars.compile(_source2);
-
-    var context = messageBody.allUsers;
-
-    var html = _template2(context);
-
-    chatUsers.innerHTML = html;
-  } else if (messageBody.messageBody.type == "img") {
-    var currentUsers = document.querySelectorAll("[data-nick=\"".concat(messageBody.client.datanick, "\"]"));
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = currentUsers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var _user2 = _step2.value;
-
-        _user2.querySelector("img").setAttribute("src", messageBody.messageBody.data);
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-          _iterator2.return();
+        if (messageExist != null) {
+          if (messageExist.firstElementChild.dataset.nick != userMessage.nick && messageExist.className != "right") {
+            newMessage.classList.toggle("right");
+          } else if (messageExist.firstElementChild.dataset.nick == userMessage.nick) {
+            if (messageExist.className) {
+              newMessage.classList.add(messageExist.className);
+            }
+          }
         }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
+
+        chatMessages.append(newMessage);
+        var _source = document.getElementById("message-template").innerHTML;
+
+        var _template = Handlebars.compile(_source);
+
+        var _context = userMessage;
+
+        var _html = _template(_context);
+
+        newMessage.innerHTML = _html;
+      } else if (messageBody.type == "allUsers") {
+        var usersForCounter = document.querySelector("#users");
+        numberOfUsers.innerText = parseInt(messageBody.allUsers.list.length);
+        console.log(numberOfUsers.innerText);
+        var _source2 = document.getElementById("user-template").innerHTML;
+
+        var _template2 = Handlebars.compile(_source2);
+
+        var context = messageBody.allUsers;
+
+        var html = _template2(context);
+
+        chatUsers.innerHTML = html;
+      } else if (messageBody.messageBody.type == "img") {
+        var currentUsers = document.querySelectorAll("[data-nick=\"".concat(messageBody.client.datanick, "\"]"));
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = currentUsers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var _user2 = _step2.value;
+
+            _user2.querySelector("img").setAttribute("src", messageBody.messageBody.data);
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
         }
+
+        var serverNick = messageBody.client.nick;
+        var serverName = messageBody.client.name;
+
+        _toConsumableArray(chatUsers.children).forEach(function (user) {
+          var clientNick = user.lastElementChild.lastElementChild.innerText;
+          var clientName = user.lastElementChild.firstElementChild.innerText;
+
+          if (clientNick == serverNick && clientName == serverName) {
+            user.firstElementChild.firstElementChild.src = messageBody.messageBody.data;
+          }
+        });
       }
-    }
 
-    var serverNick = messageBody.client.nick;
-    var serverName = messageBody.client.name;
+      chatUsers.onclick = function (e) {
+        if (e.target.classList.contains("user__img")) {
+          avatarPopup.style.display = "block";
+          avatarPopupName.innerText = e.target.parentElement.nextElementSibling.firstElementChild.innerText;
 
-    _toConsumableArray(chatUsers.children).forEach(function (user) {
-      var clientNick = user.lastElementChild.lastElementChild.innerText;
-      var clientName = user.lastElementChild.firstElementChild.innerText;
-
-      if (clientNick == serverNick && clientName == serverName) {
-        user.firstElementChild.firstElementChild.src = messageBody.messageBody.data;
-      }
-    });
-  }
-
-  chatUsers.onclick = function (e) {
-    if (e.target.classList.contains("user__img")) {
-      avatarPopup.style.display = "block";
-      avatarPopupName.innerText = e.target.parentElement.nextElementSibling.firstElementChild.innerText;
-
-      avatarPopupClose.onclick = function () {
-        avatarPopup.style.display = "none";
+          avatarPopupClose.onclick = function () {
+            avatarPopup.style.display = "none";
+          };
+        }
       };
+    };
+
+    authSend.onclick = function (e) {
+      e.preventDefault();
+      console.log(nicks);
+
+      if (nicks.length) {
+        if (name.value && nick.value) {
+          var _existNick;
+
+          nicks.forEach(function (nick) {
+            _existNick = nick;
+          });
+
+          if (_existNick && _existNick === nick.value) {
+            nick.value = "";
+            nick.placeholder = "This nick is already occupied!";
+            nick.classList.add("placeholderred");
+          } else {
+            ws.send(JSON.stringify({
+              type: "newUser",
+              data: {
+                name: name.value,
+                nick: nick.value,
+                datanick: nick.value
+              }
+            }));
+            name.value = "";
+            nick.value = "";
+            authWindow.style.display = "none";
+          }
+        } else if (!name.value && !nick.value) {
+          name.placeholder = "Please enter your name!";
+          name.classList.add("placeholderred");
+          nick.placeholder = "Please enter your nick!";
+          nick.classList.add("placeholderred");
+        } else if (!name.value) {
+          if (name.value && existNick && existNick === nick.value) {
+            nick.value = "";
+            nick.placeholder = "This nick is already occupied!";
+            nick.classList.add("placeholderred");
+          } else {
+            name.placeholder = "Please enter your name!";
+            name.classList.add("placeholderred");
+          }
+        } else if (!nick.value) {
+          if (nick.value && existNick && existNick === nick.value) {
+            nick.value = "";
+            nick.placeholder = "This nick is already occupied!";
+            nick.classList.add("placeholderred");
+          } else {
+            nick.placeholder = "Please enter your nick!";
+            nick.classList.add("placeholderred");
+          }
+        }
+      } else {
+        ws.send(JSON.stringify({
+          type: "newUser",
+          data: {
+            name: name.value,
+            nick: nick.value,
+            datanick: nick.value
+          }
+        }));
+        name.value = "";
+        nick.value = "";
+        authWindow.style.display = "none";
+      }
+
+      authClose.addEventListener("click", function () {
+        authWindow.style.display = "none";
+      });
+    };
+
+    messageSend.onclick = function (e) {
+      e.preventDefault();
+
+      if (chatMessage.value) {
+        ws.send(JSON.stringify({
+          type: "message",
+          data: {
+            // img: usersImgs,
+            message: chatMessage.value
+          }
+        }));
+        chatMessage.value = "";
+        chatMessage.placeholder = "Enter message...";
+        chatMessage.classList.remove("placeholderred");
+      } else {
+        chatMessage.placeholder = "Please enter your message!";
+        chatMessage.classList.add("placeholderred");
+      }
+    };
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(function (eventName) {
+      imgDropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    avatarPopupLoadImg.addEventListener("click", function () {
+      loadPopup.style.display = "block";
+    });
+    ["dragenter", "dragover"].forEach(function (eventName) {
+      imgDropArea.addEventListener(eventName, function () {
+        imgDropArea.classList.add("highlight");
+      });
+    });
+    ["dragleave", "drop"].forEach(function (eventName) {
+      imgDropArea.addEventListener(eventName, function () {
+        imgDropArea.classList.remove("highlight");
+      });
+    });
+    var avatar;
+    imgDropArea.addEventListener("drop", function (e) {
+      var dt = e.dataTransfer;
+      dropImg.src = window.URL.createObjectURL(dt.files[0]);
+      var reader = new FileReader();
+      reader.readAsDataURL(dt.files[0]);
+
+      reader.onload = function () {
+        avatar = reader.result;
+      };
+    });
+
+    loadPopupCancel.onclick = function () {
+      loadPopup.style.display = "none";
+      avatarPopup.style.display = "none";
+    };
+
+    loadPopupLoad.onclick = function () {
+      loadPopup.style.display = "none";
+      avatarPopup.style.display = "none";
+      ws.send(JSON.stringify({
+        type: "img",
+        data: avatar
+      }));
+    };
+
+    function timePlusZero(i) {
+      if (i < 10) {
+        i = "0" + i;
+      } else {
+        i = i;
+      }
+
+      return i;
     }
   };
-};
-
-authSend.onclick = function (e) {
-  e.preventDefault();
-  ws.send(JSON.stringify({
-    type: "newUser",
-    data: {
-      name: name.value,
-      nick: nick.value,
-      datanick: nick.value
-    }
-  }));
-  name.value = "";
-  nick.value = "";
-  authWindow.style.display = "none";
-};
-
-authClose.addEventListener("click", function () {
-  authWindow.style.display = "none";
-});
-
-messageSend.onclick = function (e) {
-  e.preventDefault();
-  ws.send(JSON.stringify({
-    type: "message",
-    data: {
-      // img: usersImgs,
-      message: chatMessage.value
-    }
-  }));
-  chatMessage.value = "";
-};
-
-["dragenter", "dragover", "dragleave", "drop"].forEach(function (eventName) {
-  imgDropArea.addEventListener(eventName, preventDefaults, false);
-});
-
-function preventDefaults(e) {
-  e.preventDefault();
-  e.stopPropagation();
-}
-
-avatarPopupLoadImg.addEventListener("click", function () {
-  loadPopup.style.display = "block";
-});
-["dragenter", "dragover"].forEach(function (eventName) {
-  imgDropArea.addEventListener(eventName, function () {
-    imgDropArea.classList.add("highlight");
-  });
-});
-["dragleave", "drop"].forEach(function (eventName) {
-  imgDropArea.addEventListener(eventName, function () {
-    imgDropArea.classList.remove("highlight");
-  });
-});
-var avatar;
-imgDropArea.addEventListener("drop", function (e) {
-  var dt = e.dataTransfer;
-  dropImg.src = window.URL.createObjectURL(dt.files[0]);
-  var reader = new FileReader();
-  reader.readAsDataURL(dt.files[0]);
-
-  reader.onload = function () {
-    avatar = reader.result;
-  };
-});
-
-loadPopupCancel.onclick = function () {
-  loadPopup.style.display = "none";
-  avatarPopup.style.display = "none";
-};
-
-loadPopupLoad.onclick = function () {
-  loadPopup.style.display = "none";
-  avatarPopup.style.display = "none";
-  ws.send(JSON.stringify({
-    type: "img",
-    data: avatar
-  }));
 };
 
 },{"handlebars":31}]},{},[43]);
