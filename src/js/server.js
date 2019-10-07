@@ -1,7 +1,7 @@
 const WebSocket = require("ws");
 const uuidv1 = require("uuid/v1");
 
-const server = new WebSocket.Server({ port: 9000 });
+const server = new WebSocket.Server({ port: 9020 });
 const users = {
     type: "allUsers",
     allUsers: {
@@ -10,6 +10,9 @@ const users = {
 };
 
 server.on("connection", function connection(ws) {
+    if (users.allUsers.list.length) {
+        ws.send(JSON.stringify({ type: "forValidation", users: users.allUsers.list }));
+    }
     ws.on("message", function(message) {
         const messageBody = JSON.parse(message);
         // console.log("message from client: ", messageBody);
